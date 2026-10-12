@@ -158,7 +158,7 @@ export const SecretScanningDataSourceRow = ({
                       projectId
                     },
                     search: {
-                      search: name,
+                      dataSourceId: id,
                       status: SecretScanningFindingStatus.Unresolved
                     }
                   });

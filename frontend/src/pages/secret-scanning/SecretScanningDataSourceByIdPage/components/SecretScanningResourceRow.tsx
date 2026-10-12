@@ -153,7 +153,8 @@ export const SecretScanningResourceRow = ({ resource, dataSource }: Props) => {
                       projectId: dataSource.projectId
                     },
                     search: {
-                      search: name,
+                      dataSourceId: dataSource.id,
+                      resourceId: id,
                       status: SecretScanningFindingStatus.Unresolved
                     }
                   })

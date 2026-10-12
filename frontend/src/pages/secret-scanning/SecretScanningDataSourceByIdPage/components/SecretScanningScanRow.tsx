@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { faCheck, faCopy, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { AlertTriangleIcon, CheckIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
@@ -19,7 +18,6 @@ import {
   Tr
 } from "@app/components/v2";
 import { Badge } from "@app/components/v3";
-import { useOrganization, useProject } from "@app/context";
 import { useToggle } from "@app/hooks";
 import {
   SecretScanningScanStatus,
@@ -42,10 +40,7 @@ export const SecretScanningScanRow = ({ scan }: Props) => {
     resolvedFindings,
     type
   } = scan;
-  const { currentOrg } = useOrganization();
-  const { currentProject } = useProject();
   const totalFindings = resolvedFindings + unresolvedFindings;
-  const navigate = useNavigate();
 
   const [isIdCopied, setIsIdCopied] = useToggle(false);
 
@@ -94,28 +89,12 @@ export const SecretScanningScanRow = ({ scan }: Props) => {
           ) : // eslint-disable-next-line no-nested-ternary
           totalFindings ? (
             <div className="flex flex-col">
-              <Badge asChild variant={unresolvedFindings ? "warning" : "success"}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    navigate({
-                      to: "/organizations/$orgId/projects/secret-scanning/$projectId/findings",
-                      params: {
-                        orgId: currentOrg.id,
-                        projectId: currentProject.id
-                      },
-                      search: {
-                        search: `scanId:${id}`
-                      }
-                    })
-                  }
-                >
-                  {unresolvedFindings ? <AlertTriangleIcon /> : <CheckIcon />}
-                  {totalFindings}{" "}
-                  {unresolvedFindings
-                    ? `Secret${totalFindings > 1 ? "s" : ""} Detected`
-                    : "Leak Resolved"}
-                </button>
+              <Badge variant={unresolvedFindings ? "warning" : "success"}>
+                {unresolvedFindings ? <AlertTriangleIcon /> : <CheckIcon />}
+                {totalFindings}{" "}
+                {unresolvedFindings
+                  ? `Secret${totalFindings > 1 ? "s" : ""} Detected`
+                  : "Leak Resolved"}
               </Badge>
             </div>
           ) : status === SecretScanningScanStatus.Failed ? (
