@@ -77,6 +77,7 @@ import {
   OrgPermissionProjectActions,
   OrgPermissionSecretsManagementInsightsActions
 } from "@app/context/OrgPermissionContext/types";
+import { setCertManagerActiveProjectCookie } from "@app/helpers/certManagerActiveProject";
 import {
   getProjectHomePage,
   getProjectLucideIcon,
@@ -84,6 +85,7 @@ import {
   PROJECT_TILE_STYLE,
   urlSlugToProjectType
 } from "@app/helpers/project";
+import { setSecretScanningActiveProjectCookie } from "@app/helpers/secretScanningActiveProject";
 import {
   getUserTablePreference,
   PreferenceKey,
@@ -248,9 +250,10 @@ export const ProjectTypePage = () => {
   useEffect(() => {
     if (projectType === ProjectType.CertificateManager) {
       if (certManagerInstance?.activeProjectId) {
+        setCertManagerActiveProjectCookie(orgId, certManagerInstance.activeProjectId);
         navigate({
-          to: "/organizations/$orgId/projects/cert-manager/$projectId/overview",
-          params: { orgId, projectId: certManagerInstance.activeProjectId }
+          to: "/organizations/$orgId/cert-manager/overview",
+          params: { orgId }
         });
       } else if (certManagerInstance && !certManagerInstance.activeProjectId) {
         setIsCertManagerSetupOpen(true);
@@ -269,9 +272,10 @@ export const ProjectTypePage = () => {
     if (projectType !== ProjectType.SecretScanning) return;
 
     if (secretScanningProjectId) {
+      setSecretScanningActiveProjectCookie(orgId, secretScanningProjectId);
       navigate({
-        to: "/organizations/$orgId/projects/secret-scanning/$projectId/data-sources",
-        params: { orgId, projectId: secretScanningProjectId }
+        to: "/organizations/$orgId/secret-scanning/data-sources",
+        params: { orgId }
       });
     } else if (isSecretScanningProjectError) {
       // Failed queries are not reported globally, so without this the page would stay blank.

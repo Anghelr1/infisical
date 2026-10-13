@@ -68,11 +68,7 @@ import {
   useOrganization,
   useProject
 } from "@app/context";
-import {
-  getProjectBaseURL,
-  getSingleProjectProductName,
-  isSingleProjectProduct
-} from "@app/helpers/project";
+import { getProjectBaseURL, getProjectLabel, hidesProjects } from "@app/helpers/project";
 import {
   getUserTablePreference,
   PreferenceKey,
@@ -103,8 +99,8 @@ export const IdentityTab = withProjectPermission(
     const { currentProject, projectId } = useProject();
     const navigate = useNavigate();
     const { isSubOrganization, currentOrg } = useOrganization();
-    const productLabel = getSingleProjectProductName(currentProject?.type) ?? "Project";
-    const isSingleProject = isSingleProjectProduct(currentProject?.type);
+    const productLabel = getProjectLabel(currentProject?.type);
+    const projectsHidden = hidesProjects(currentProject?.type);
 
     const {
       offset,
@@ -192,7 +188,7 @@ export const IdentityTab = withProjectPermission(
         });
 
         createNotification({
-          text: "Successfully deleted project machine identity",
+          text: `Successfully deleted ${projectsHidden ? productLabel : "project"} machine identity`,
           type: "success"
         });
       } else {
@@ -203,7 +199,7 @@ export const IdentityTab = withProjectPermission(
         });
 
         createNotification({
-          text: "Successfully removed machine identity from project",
+          text: `Successfully removed machine identity from ${projectsHidden ? productLabel : "project"}`,
           type: "success"
         });
       }
@@ -221,7 +217,7 @@ export const IdentityTab = withProjectPermission(
         <Card>
           <CardHeader>
             <CardTitle>
-              {isSingleProject ? "Machine Identities" : `${productLabel} Machine Identities`}
+              {projectsHidden ? "Machine Identities" : `${productLabel} Machine Identities`}
               <DocumentationLinkBadge href="https://infisical.com/docs/documentation/platform/identities/machine-identities" />
             </CardTitle>
             <CardDescription>
@@ -239,7 +235,7 @@ export const IdentityTab = withProjectPermission(
                     isDisabled={!isAllowed}
                   >
                     <PlusIcon />
-                    {isSingleProject
+                    {projectsHidden
                       ? "Add Machine Identity"
                       : `Add Machine Identity to ${productLabel}`}
                   </Button>
@@ -258,7 +254,7 @@ export const IdentityTab = withProjectPermission(
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={
-                      isSingleProject
+                      projectsHidden
                         ? "Search machine identities by name..."
                         : "Search project machine identities by name..."
                     }
@@ -275,7 +271,7 @@ export const IdentityTab = withProjectPermission(
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>
-                      {isSingleProject ? "Filter by Role" : `Filter by ${productLabel} Role`}
+                      {projectsHidden ? "Filter by Role" : `Filter by ${productLabel} Role`}
                     </DropdownMenuLabel>
                     {projectRoles?.map(({ id, slug, name }) => (
                       <DropdownMenuCheckboxItem
@@ -299,7 +295,7 @@ export const IdentityTab = withProjectPermission(
                       {/* eslint-disable-next-line no-nested-ternary */}
                       {debouncedSearch.trim().length > 0 || isTableFiltered
                         ? "No machine identities match search"
-                        : isSingleProject
+                        : projectsHidden
                           ? "No machine identities have been added"
                           : "No machine identities have been added to this project"}
                     </EmptyTitle>
@@ -337,7 +333,7 @@ export const IdentityTab = withProjectPermission(
                           />
                         </TableHead>
                         <TableHead className="w-1/4">
-                          {isSingleProject ? "Role" : `${productLabel} Role`}
+                          {projectsHidden ? "Role" : `${productLabel} Role`}
                         </TableHead>
                         <TableHead>Managed by</TableHead>
                         <TableHead className="w-5">
@@ -651,7 +647,7 @@ export const IdentityTab = withProjectPermission(
           }
           description={
             popUp.deleteIdentity.data?.isProjectIdentity
-              ? "This permanently deletes the project machine identity and revokes its access. This cannot be undone."
+              ? `This permanently deletes the ${projectsHidden ? productLabel : "project"} machine identity and revokes its access. This cannot be undone.`
               : `The machine identity will lose access to this ${productLabel.toLowerCase()} but remain available in its organization.`
           }
           descriptionAsAlert

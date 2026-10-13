@@ -6,14 +6,13 @@ import {
   ProjectPermissionAppConnectionActions,
   ProjectPermissionSub
 } from "@app/context/ProjectPermissionContext/types";
+import { getProjectLabel, hidesProjects } from "@app/helpers/project";
 import { withProjectPermission } from "@app/hoc";
-import { ProjectType } from "@app/hooks/api/projects/types";
 import { AppConnectionsTable } from "@app/pages/organization/AppConnections/AppConnectionsPage/components";
 
 export const AppConnectionsPage = withProjectPermission(
   () => {
     const { currentProject } = useProject();
-    const isSecretScanning = currentProject.type === ProjectType.SecretScanning;
 
     return (
       <div className="bg-page">
@@ -27,10 +26,10 @@ export const AppConnectionsPage = withProjectPermission(
             <PageHeader
               scope={currentProject.type}
               className="w-full"
-              title={isSecretScanning ? "App Connections" : "Project App Connections"}
-              description={
-                isSecretScanning ? "Manage App Connections" : "Manage project App Connections"
+              title={
+                hidesProjects(currentProject.type) ? "App Connections" : "Project App Connections"
               }
+              description={`Manage ${getProjectLabel(currentProject.type)} App Connections`}
             />
 
             <AppConnectionsTable projectId={currentProject.id} projectType={currentProject.type} />
