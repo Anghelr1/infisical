@@ -5,13 +5,7 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 
 import { ProjectPermissionCan } from "@app/components/permissions";
 import { Button, ContentLoader, EmptyState } from "@app/components/v2";
-import {
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  DocumentationLinkBadge,
-  ProviderIcon
-} from "@app/components/v3";
+import { ProviderIcon } from "@app/components/v3";
 import { ROUTE_PATHS } from "@app/const/routes";
 import { ProjectPermissionSub } from "@app/context";
 import {
@@ -107,15 +101,7 @@ const PageContent = () => {
             >
               <SecretScanningFindingsTable
                 dataSource={dataSource}
-                cardHeader={
-                  <CardHeader>
-                    <CardTitle>
-                      Findings
-                      <DocumentationLinkBadge href="https://infisical.com/docs/documentation/platform/secret-scanning/usage#findings" />
-                    </CardTitle>
-                    <CardDescription>Secrets detected in this data source.</CardDescription>
-                  </CardHeader>
-                }
+                description="Secrets detected in this data source."
               />
             </ProjectPermissionCan>
             <SecretScanningResourceSection dataSource={dataSource} />
